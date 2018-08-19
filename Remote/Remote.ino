@@ -25,7 +25,7 @@ long newpos;
 int prevButtonState = HIGH;
 bool needsRefresh = true;
 bool advanced = false;
-unsigned long startTime;
+unsigned long mActivationTime;
 
 
 /********* Trellis Setup ***************/
@@ -112,8 +112,9 @@ Mode mModes[] = {
 	TotemMode(), 
 	TotemMode()
 };
-int mCurrentMode = 0;
 int mSelectedMode = 0;
+long mSelectionTime;
+int mActiveMode = 0;
 int lastTB[8] = {16, 16, 16, 16, 16, 16, 16, 16}; //array to store per-menu Trellis button
 
 /*******************SETUP************/
@@ -211,11 +212,11 @@ void setup() {
 //////////////////////////////////////////////////////////////////
   void drawText(String string) {
     matrix.clear();
-    matrix.setTextSize(0);
+    matrix.setTextSize(1);
     matrix.setTextWrap(false);  // we dont want text to wrap so it scrolls nicely
-    matrix.setTextColor(20);
+    matrix.setTextColor(10);
 	long current = millis();
-    matrix.setCursor((current / 1000) % 16 ,0);
+    matrix.setCursor(-(((current - mSelectionTime) / 120) % 16) ,0);
     matrix.print(string);
   }
 
@@ -224,29 +225,17 @@ void setup() {
 
 		//check the encoder knob, set the current position as origin
 	  long newpos = knob.read() / 4;//divide for encoder detents
-
-	  /* // for debugging
-	   Serial.print("pos=");
-	   Serial.print(pos);
-	   Serial.print(", newpos=");
-	   Serial.println(newpos);
-	  */
 	  if (newpos != pos) {
 		  int diff = newpos - pos;//check the different between old and new position
 		  if (diff >= 1) {
-			  mCurrentMode++;
-			  mCurrentMode = (mCurrentMode + NUM_MODES) % NUM_MODES;//modulo to roll over the m variable through the list size
+			  mSelectedMode++;
+			  mSelectedMode = (mSelectedMode + NUM_MODES) % NUM_MODES;//modulo to roll over the m variable through the list size
+		  } else { //rotating backwards
+			  mSelectedMode--;
+			  mSelectedMode = (mSelectedMode + NUM_MODES) % NUM_MODES;
 		  }
-		  else if (diff == -1) { //rotating backwards
-			  mCurrentMode--;
-			  mCurrentMode = (mCurrentMode + NUM_MODES) % NUM_MODES;
-		  }
-
+		  mSelectionTime = millis();
 		  pos = newpos;
-
-		  // Serial.print("m is: ");
-		  //Serial.println(m);
-
 
 		  //clear Trellis lights 
 		  for (int t = 0;t <= 16;t++) {
@@ -254,23 +243,23 @@ void setup() {
 			  trellis.writeDisplay();
 		  }
 		  //light last saved light for current menu
-		  trellis.clrLED(lastTB[mCurrentMode]);
-		  trellis.setLED(lastTB[mCurrentMode]);
+		  trellis.clrLED(lastTB[mSelectedMode]);
+		  trellis.setLED(lastTB[mSelectedMode]);
 		  trellis.writeDisplay();
 	  }
 
 	  // remember that the switch is active low
 	  int buttonState = digitalRead(PIN_ENCODER_SWITCH);
 	  if (buttonState == LOW) {
-		  unsigned long now = millis();
-		  if (prevButtonState == HIGH) {
-			  prevButtonState = buttonState;
-			  startTime = now;
-			  // Serial.println("button pressed");
-			  trellis.clrLED(lastTB[mCurrentMode]);
-			  trellis.writeDisplay();
-			  lastTB[mCurrentMode] = 17;//set this above the physical range so 
-			  //next button press works properly
+		if (prevButtonState == HIGH && mActiveMode != mSelectedMode) {
+			prevButtonState = buttonState;
+			unsigned long now = millis();
+			mActivationTime = now;
+			mActiveMode = mSelectedMode;
+			trellis.clrLED(lastTB[mSelectedMode]);
+			trellis.writeDisplay();
+			lastTB[mSelectedMode] = 17;//set this above the physical range so 
+			//next button press works properly
 		  }
 	  }
 	  else if (buttonState == HIGH && prevButtonState == LOW) {
@@ -281,237 +270,241 @@ void setup() {
 
   
 void loop() {
-  delay(30); // 30ms delay is required, dont remove me! (Trellis)
+	delay(30); // 30ms delay is required, dont remove me! (Trellis)
 
-    handleRotary();
+	handleRotary();
 
-  /*************Trellis Button Presses***********/
-  if (MODE == MOMENTARY) {
-    if (trellis.readSwitches()) { // If a button was just pressed or released...
-      for (uint8_t i=0; i<numKeys; i++) { // go through every button
-        if (trellis.justPressed(i)) { // if it was pressed, turn it on
-        //Serial.print("v"); Serial.println(i);
-          trellis.setLED(i);
-        } 
-        if (trellis.justReleased(i)) { // if it was released, turn it off
-          //Serial.print("^"); Serial.println(i);
-          trellis.clrLED(i);
-        }
-      }
-      trellis.writeDisplay(); // tell the trellis to set the LEDs we requested
-    }
-  }
+	Mode currentMode = mModes[mSelectedMode];
+	String name = currentMode.getName();
+	drawText(name);
 
-  if (MODE == LATCHING) {
-    if (trellis.readSwitches()) { // If a button was just pressed or released...
-      for (uint8_t i=0; i<numKeys; i++) { // go through every button
-        if (trellis.justPressed(i)) { // if it was pressed...
-         //Serial.print("v"); Serial.println(i);
+	/*************Trellis Button Presses***********/
+	if (MODE == MOMENTARY) {
+	if (trellis.readSwitches()) { // If a button was just pressed or released...
+	for (uint8_t i=0; i<numKeys; i++) { // go through every button
+	if (trellis.justPressed(i)) { // if it was pressed, turn it on
+	//Serial.print("v"); Serial.println(i);
+		trellis.setLED(i);
+	} 
+	if (trellis.justReleased(i)) { // if it was released, turn it off
+		//Serial.print("^"); Serial.println(i);
+		trellis.clrLED(i);
+	}
+	}
+	trellis.writeDisplay(); // tell the trellis to set the LEDs we requested
+	}
+	}
 
-         // Alternate the LED unless the same button is pressed again
-         //if(i!=lastButton){
-         if(i!=lastTB[mCurrentMode]){ 
-          if (trellis.isLED(i)){
-              trellis.clrLED(i);
-              lastTB[mCurrentMode]=i; //set the stored value for menu changes
-          }
-          else{
-            trellis.setLED(i);
-            //trellis.clrLED(lastButton);//turn off last one
-            trellis.clrLED(lastTB[mCurrentMode]);
-            lastTB[mCurrentMode]=i; //set the stored value for menu changes
-          }
-          trellis.writeDisplay();
-        }
-            char radiopacket[20];
+	if (MODE == LATCHING) {
+	if (trellis.readSwitches()) { // If a button was just pressed or released...
+	for (uint8_t i=0; i<numKeys; i++) { // go through every button
+	if (trellis.justPressed(i)) { // if it was pressed...
+		//Serial.print("v"); Serial.println(i);
+
+		// Alternate the LED unless the same button is pressed again
+		//if(i!=lastButton){
+		if(i!=lastTB[mSelectedMode]){ 
+		if (trellis.isLED(i)){
+			trellis.clrLED(i);
+			lastTB[mSelectedMode]=i; //set the stored value for menu changes
+		}
+		else{
+		trellis.setLED(i);
+		//trellis.clrLED(lastButton);//turn off last one
+		trellis.clrLED(lastTB[mSelectedMode]);
+		lastTB[mSelectedMode]=i; //set the stored value for menu changes
+		}
+		trellis.writeDisplay();
+	}
+		char radiopacket[20];
             
-        /**************SHARKS**************/
-        //check the rotary encoder menu choice
-        if(mCurrentMode==0){//first menu item
-            if (i==0){ //button 0 sends button A command
-              radiopacket[0] = 'A';
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("Sharks");
-              //oled.setCursor(0,16);
-              //oled.print("Kill....ON");
-              //oled.display();  
-            }
-            if (i==1){ //button 1 sends button B command
-              radiopacket[0] = 'B';
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("Sharks");
-              //oled.setCursor(0,16);
-              //oled.print("Kill...OFF");
-              //oled.display(); 
-            }
-            if (i==4){ //
-              radiopacket[0] = 'C';
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("Sharks");
-              //oled.setCursor(0,16);
-              //oled.print("Sleep....ON");
-              //oled.display(); 
-            } 
-            if (i==5){ //
-              radiopacket[0] = 'D';
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("Sharks");
-              //oled.setCursor(0,16);
-              //oled.print("Sleep...OFF");
-              //oled.display(); 
-            } 
-        }
-        /**************NeoPixels**************/
-        if(mCurrentMode==1){//next menu item
-            if (i==0){ //button 0 sends button A command
-              radiopacket[0] = 'E';
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("NeoPixels");
-              //oled.setCursor(75,16);
-              //oled.print("RED");
-              //oled.display(); 
-            }
-            if (i==1){ //button 1 sends button B command
-              radiopacket[0] = 'F';
-             //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("NeoPixels");
-              //oled.setCursor(70,16);
-              //oled.print("GREEN");
-              //oled.display(); 
-            }
-            if (i==2){ //button 4 sends button C command
-              radiopacket[0] = 'G';
-             //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("NeoPixels");
-              //oled.setCursor(75,16);
-              //oled.print("BLUE");
-              //oled.display();  
-            } 
+	/**************SHARKS**************/
+	//check the rotary encoder menu choice
+	if(mSelectedMode==0){//first menu item
+		if (i==0){ //button 0 sends button A command
+			radiopacket[0] = 'A';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Sharks");
+			//oled.setCursor(0,16);
+			//oled.print("Kill....ON");
+			//oled.display();  
+		}
+		if (i==1){ //button 1 sends button B command
+			radiopacket[0] = 'B';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Sharks");
+			//oled.setCursor(0,16);
+			//oled.print("Kill...OFF");
+			//oled.display(); 
+		}
+		if (i==4){ //
+			radiopacket[0] = 'C';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Sharks");
+			//oled.setCursor(0,16);
+			//oled.print("Sleep....ON");
+			//oled.display(); 
+		} 
+		if (i==5){ //
+			radiopacket[0] = 'D';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Sharks");
+			//oled.setCursor(0,16);
+			//oled.print("Sleep...OFF");
+			//oled.display(); 
+		} 
+	}
+	/**************NeoPixels**************/
+	if(mSelectedMode==1){//next menu item
+		if (i==0){ //button 0 sends button A command
+			radiopacket[0] = 'E';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("NeoPixels");
+			//oled.setCursor(75,16);
+			//oled.print("RED");
+			//oled.display(); 
+		}
+		if (i==1){ //button 1 sends button B command
+			radiopacket[0] = 'F';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("NeoPixels");
+			//oled.setCursor(70,16);
+			//oled.print("GREEN");
+			//oled.display(); 
+		}
+		if (i==2){ //button 4 sends button C command
+			radiopacket[0] = 'G';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("NeoPixels");
+			//oled.setCursor(75,16);
+			//oled.print("BLUE");
+			//oled.display();  
+		} 
 
-            if(i>=3 && i<=15){
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("NeoPixels");
-              //oled.display();  
-            }  
-        }
-        /**************Motor Props**************/
-        if(mCurrentMode==2){//next menu item
-            if (i==0){ //button 0 sends button D command CARD UP
-              radiopacket[0] = 'H';
-             //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("Motors");
-              //oled.setCursor(0,16);
-              //oled.print("Card....UP");
-              //oled.display();   
-            }
-            if (i==1){ //button 1 sends button E command CARD DOWN
-              radiopacket[0] = 'I';
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("Motors");
-              //oled.setCursor(0,16);
-              //oled.print("Card..DOWN");
-              //oled.display();
-            }
-            if (i==4){ //button 4 sends button F command PUMP RUN temp
-              radiopacket[0] = 'J';
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("Motors");
-              //oled.setCursor(0,16);
-              //oled.print("Pump...RUN");
-              //oled.display(); 
-            }
-            if(i>=5 && i<=15){
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("Motors");
+		if(i>=3 && i<=15){
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("NeoPixels");
+			//oled.display();  
+		}  
+	}
+	/**************Motor Props**************/
+	if(mSelectedMode==2){//next menu item
+		if (i==0){ //button 0 sends button D command CARD UP
+			radiopacket[0] = 'H';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Motors");
+			//oled.setCursor(0,16);
+			//oled.print("Card....UP");
+			//oled.display();   
+		}
+		if (i==1){ //button 1 sends button E command CARD DOWN
+			radiopacket[0] = 'I';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Motors");
+			//oled.setCursor(0,16);
+			//oled.print("Card..DOWN");
+			//oled.display();
+		}
+		if (i==4){ //button 4 sends button F command PUMP RUN temp
+			radiopacket[0] = 'J';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Motors");
+			//oled.setCursor(0,16);
+			//oled.print("Pump...RUN");
+			//oled.display(); 
+		}
+		if(i>=5 && i<=15){
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Motors");
 
-              //oled.display();  
-            }   
-        }
-        /**************Lamps**************/
-        if(mCurrentMode==3){//next menu item
-            if (i==0){ 
-              radiopacket[0] = 'K';
-             //oled.clearDisplay();
-             //oled.setCursor(0,0);
-              //oled.print("Lamp");
-              //oled.setCursor(0,16);
-              //oled.print("Spot1...ON");
-              //oled.display();   
-            }
-            if (i==1){ 
-              radiopacket[0] = 'L';
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("Lamp");
-              //oled.setCursor(0,16);
-              //oled.print("Spot1..Off");
-              //oled.display();   
-            }
-            if(i>=2 && i<=15){
-              //oled.clearDisplay();
-              //oled.setCursor(0,0);
-              //oled.print("Lamp");
-              //oled.display();  
-            }   
-        }
+			//oled.display();  
+		}   
+	}
+	/**************Lamps**************/
+	if(mSelectedMode==3){//next menu item
+		if (i==0){ 
+			radiopacket[0] = 'K';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Lamp");
+			//oled.setCursor(0,16);
+			//oled.print("Spot1...ON");
+			//oled.display();   
+		}
+		if (i==1){ 
+			radiopacket[0] = 'L';
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Lamp");
+			//oled.setCursor(0,16);
+			//oled.print("Spot1..Off");
+			//oled.display();   
+		}
+		if(i>=2 && i<=15){
+			//oled.clearDisplay();
+			//oled.setCursor(0,0);
+			//oled.print("Lamp");
+			//oled.display();  
+		}   
+	}
             
-          Serial.print("Sending "); 
-          Serial.println(radiopacket[0]);
+		Serial.print("Sending "); 
+		Serial.println(radiopacket[0]);
 
-          rf69.send((uint8_t *)radiopacket, strlen(radiopacket));
-          rf69.waitPacketSent(); 
-          //reset packet so unassigned buttons don't send last command
-          radiopacket[0]='Z'; //also being used to turn off NeoPixels 
-          //from any unused button
+		rf69.send((uint8_t *)radiopacket, strlen(radiopacket));
+		rf69.waitPacketSent(); 
+		//reset packet so unassigned buttons don't send last command
+		radiopacket[0]='Z'; //also being used to turn off NeoPixels 
+		//from any unused button
 
-          if (rf69.waitAvailableTimeout(100)) {
-            // Should be a message for us now   
-            uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
-            uint8_t len = sizeof(buf);
+		if (rf69.waitAvailableTimeout(100)) {
+		// Should be a message for us now   
+		uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
+		uint8_t len = sizeof(buf);
             
-            if (! rf69.recv(buf, &len)) {
-              Serial.println("Receive failed");
-              return;
-            }
-            digitalWrite(LED, HIGH);
-            rf69.printBuffer("Received: ", buf, len);
-            buf[len] = 0;
+		if (! rf69.recv(buf, &len)) {
+			Serial.println("Receive failed");
+			return;
+		}
+		digitalWrite(LED, HIGH);
+		rf69.printBuffer("Received: ", buf, len);
+		buf[len] = 0;
             
-            //Serial.print("TX Got: "); 
-            //Serial.println((char*)buf);
-            Serial.print("RSSI: "); 
-            Serial.println(rf69.lastRssi(), DEC);
+		//Serial.print("TX Got: "); 
+		//Serial.println((char*)buf);
+		Serial.print("RSSI: "); 
+		Serial.println(rf69.lastRssi(), DEC);
 
-            //delay(1000);//chill for a moment before returning the message to RX unit
+		//delay(1000);//chill for a moment before returning the message to RX unit
 
-            /*************Reply message from RX unit***********/
-            //oled.clearDisplay();
-            //oled.print((char*)buf[0]);
-            //oled.print("RSSI: "); oled.print(rf69.lastRssi());
-            //oled.display(); 
+		/*************Reply message from RX unit***********/
+		//oled.clearDisplay();
+		//oled.print((char*)buf[0]);
+		//oled.print("RSSI: "); oled.print(rf69.lastRssi());
+		//oled.display(); 
             
             
-            digitalWrite(LED, LOW);
-          }
+		digitalWrite(LED, LOW);
+		}
 
-          //lastButton=i;//set for next pass through to turn this one off
-        } 
-      }
-      // tell the trellis to set the LEDs we requested
-      trellis.writeDisplay();
-    }
+		//lastButton=i;//set for next pass through to turn this one off
+	} 
+	}
+	// tell the trellis to set the LEDs we requested
+	trellis.writeDisplay();
+	}
   }
 }
 
