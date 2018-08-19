@@ -1,16 +1,12 @@
-//Ada_remoteFXTrigger_TX
-//Remote Effects Trigger Box Transmitter
-//by John Park
-//for Adafruit Industries
+// Selim Cinek and John Javscovski
+//  Burning man Art Project
 //
-// General purpose button box
-// for triggering remote effects
-// using packet radio Feather boards
+// The Light In Us.
 //
-//
-//MIT License
+// MIT License
 
 
+#include "TotemMode.h"
 #include <SPI.h>
 #include <RH_RF69.h>
 #include <Wire.h>
@@ -18,6 +14,7 @@
 #include <Adafruit_IS31FL3731.h>
 #include "Adafruit_Trellis.h"
 #include <Encoder.h>
+using namespace std;
 
 /********* Encoder Setup ***************/
 #define PIN_ENCODER_SWITCH 11
@@ -42,7 +39,7 @@ Adafruit_TrellisSet trellis =  Adafruit_TrellisSet(&matrix0);
 #define INTPIN A2
 
 /************ OLED Setup ***************/
-Adafruit_IS31FL3731_Wing mLedMatrix = Adafruit_IS31FL3731_Wing();
+Adafruit_IS31FL3731_Wing matrix = Adafruit_IS31FL3731_Wing();
 #if defined(ESP8266)
   #define BUTTON_A 0
   #define BUTTON_B 16
@@ -110,8 +107,13 @@ RH_RF69 rf69(RFM69_CS, RFM69_INT);
 
 int lastButton=17; //last button pressed for Trellis logic
 
-int menuList[8]={1,2,3,4,5,6,7,8}; //for rotary encoder choices
-int m = 0; //variable to increment through menu list
+#define NUM_MODES 2
+Mode mModes[] = {
+	TotemMode(), 
+	TotemMode()
+};
+int mCurrentMode = 0;
+int mSelectedMode = 0;
 int lastTB[8] = {16, 16, 16, 16, 16, 16, 16, 16}; //array to store per-menu Trellis button
 
 /*******************SETUP************/
@@ -133,14 +135,13 @@ void setup() {
   digitalPinToInterrupt(12);
   
   // Initialize OLED display
-  //oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x32)
-  //oled.setTextWrap(false);
-  //oled.display();
-  //delay(500);
-  //oled.clearDisplay();
-  //oled.display();
-  //oled.setTextSize(2);
-  //oled.setTextColor(WHITE);
+  Serial.begin(9600);
+  Serial.println("ISSI manual animation test");
+  if (! matrix.begin()) {
+    Serial.println("IS31 not found");
+    while (1);
+  }
+  Serial.println("IS31 Found!");
   pinMode(BUTTON_A, INPUT_PULLUP);
   pinMode(BUTTON_B, INPUT_PULLUP);
   pinMode(BUTTON_C, INPUT_PULLUP);
@@ -208,151 +209,81 @@ void setup() {
 }
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+  void drawText(String string) {
+    matrix.clear();
+    matrix.setTextSize(0);
+    matrix.setTextWrap(false);  // we dont want text to wrap so it scrolls nicely
+    matrix.setTextColor(20);
+	long current = millis();
+    matrix.setCursor((current / 1000) % 16 ,0);
+    matrix.print(string);
+  }
+
+  void handleRotary() {
+	  /*************Rotary Encoder Menu***********/
+
+		//check the encoder knob, set the current position as origin
+	  long newpos = knob.read() / 4;//divide for encoder detents
+
+	  /* // for debugging
+	   Serial.print("pos=");
+	   Serial.print(pos);
+	   Serial.print(", newpos=");
+	   Serial.println(newpos);
+	  */
+	  if (newpos != pos) {
+		  int diff = newpos - pos;//check the different between old and new position
+		  if (diff >= 1) {
+			  mCurrentMode++;
+			  mCurrentMode = (mCurrentMode + NUM_MODES) % NUM_MODES;//modulo to roll over the m variable through the list size
+		  }
+		  else if (diff == -1) { //rotating backwards
+			  mCurrentMode--;
+			  mCurrentMode = (mCurrentMode + NUM_MODES) % NUM_MODES;
+		  }
+
+		  pos = newpos;
+
+		  // Serial.print("m is: ");
+		  //Serial.println(m);
+
+
+		  //clear Trellis lights 
+		  for (int t = 0;t <= 16;t++) {
+			  trellis.clrLED(t);
+			  trellis.writeDisplay();
+		  }
+		  //light last saved light for current menu
+		  trellis.clrLED(lastTB[mCurrentMode]);
+		  trellis.setLED(lastTB[mCurrentMode]);
+		  trellis.writeDisplay();
+	  }
+
+	  // remember that the switch is active low
+	  int buttonState = digitalRead(PIN_ENCODER_SWITCH);
+	  if (buttonState == LOW) {
+		  unsigned long now = millis();
+		  if (prevButtonState == HIGH) {
+			  prevButtonState = buttonState;
+			  startTime = now;
+			  // Serial.println("button pressed");
+			  trellis.clrLED(lastTB[mCurrentMode]);
+			  trellis.writeDisplay();
+			  lastTB[mCurrentMode] = 17;//set this above the physical range so 
+			  //next button press works properly
+		  }
+	  }
+	  else if (buttonState == HIGH && prevButtonState == LOW) {
+		  //Serial.println("button released!");
+		  prevButtonState = buttonState;
+	  }
+  }
+
+  
 void loop() {
   delay(30); // 30ms delay is required, dont remove me! (Trellis)
 
-    /*************Rotary Encoder Menu***********/
-
-    //check the encoder knob, set the current position as origin
-    long newpos = knob.read() / 4;//divide for encoder detents
-    
-    /* // for debugging
-     Serial.print("pos=");
-     Serial.print(pos);
-     Serial.print(", newpos=");
-     Serial.println(newpos);
-    */
-
-    if(newpos != pos){
-      int diff = newpos - pos;//check the different between old and new position
-      if(diff>=1){
-        m++; 
-        m = (m+8) % 8;//modulo to roll over the m variable through the list size
-       }
-
-      if(diff==-1){ //rotating backwards
-         m--;
-         m = (m+8) % 8;
-       }
-      /* //uncomment for debugging or general curiosity
-      Serial.print("Diff = ");
-      Serial.print(diff);
-      Serial.print("  pos= ");
-      Serial.print(pos);
-      Serial.print(", newpos=");
-      Serial.println(newpos);
-      Serial.println(menuList[m]);
-      */
-
-      pos = newpos;
-
-      // Serial.print("m is: ");
-      //Serial.println(m);
-
-
-      //clear Trellis lights 
-      for(int t=0;t<=16;t++){
-        trellis.clrLED(t);
-        trellis.writeDisplay();
-      }
-      //light last saved light for current menu
-        trellis.clrLED(lastTB[m]);
-        trellis.setLED(lastTB[m]);
-        trellis.writeDisplay();
-      
-      //write to the display
-      //oled.setCursor(0,3);
-      //oled.clearDisplay();
-
-      int p; //for drawing bullet point menu location pixels
-      int q;
-
-      if (m==0){
-        for(p=0;p<4;p++){
-          for(q=0;q<4;q++){
-        //    oled.drawPixel(q,p,WHITE);
-          }
-        }
-        //oled.print(" Sharks");
-      }
-      if (m==1){
-        for(p=4;p<8;p++){
-          for(q=0;q<4;q++){
-      //      oled.drawPixel(q,p,WHITE);
-          }
-        }
-      //  oled.print(" NeoPixels");
-      }
-      if (m==2){
-        for(p=8;p<12;p++){
-          for(q=0;q<4;q++){
-      //      oled.drawPixel(q,p,WHITE);
-          }
-        }
-      //  oled.print(" Motors");
-      }
-      if (m==3){
-        for(p=12;p<16;p++){
-          for(q=0;q<4;q++){
-        //    oled.drawPixel(q,p,WHITE);
-          }
-        }
-        ///oled.print(" Lamps");
-      }
-      if (m==4){
-        for(p=16;p<20;p++){
-          for(q=0;q<4;q++){
-      //      oled.drawPixel(q,p,WHITE);
-          }
-        }
-      //  oled.print(" Traps");
-      }
-      if (m==5){
-        for(p=20;p<24;p++){
-          for(q=0;q<4;q++){
-      //      oled.drawPixel(q,p,WHITE);
-          }
-        }
-//        oled.print(" Radio");
-      }
-      if (m==6){
-        for(p=24;p<28;p++){
-          for(q=0;q<4;q++){
-     //       oled.drawPixel(q,p,WHITE);
-          }
-        }
-     //   oled.print(" Doors");
-      }
-      if (m==7){
-        for(p=28;p<32;p++){
-          for(q=0;q<4;q++){
-        //    oled.drawPixel(q,p,WHITE);
-          }
-        }
-      //  oled.print(" Pyro");
-      }
-      
-      //oled.display();
-    }
-
-// remember that the switch is active low
-    int buttonState = digitalRead(PIN_ENCODER_SWITCH);
-    if (buttonState == LOW) {
-        unsigned long now = millis();
-        if (prevButtonState == HIGH) {
-            prevButtonState = buttonState;
-            startTime = now;
-           // Serial.println("button pressed");
-            trellis.clrLED(lastTB[m]);
-            trellis.writeDisplay();    
-            lastTB[m]=17;//set this above the physical range so 
-            //next button press works properly
-        } 
-    } 
-    else if (buttonState == HIGH && prevButtonState == LOW) {
-      //Serial.println("button released!");
-      prevButtonState = buttonState;
-    }
+    handleRotary();
 
   /*************Trellis Button Presses***********/
   if (MODE == MOMENTARY) {
@@ -379,16 +310,16 @@ void loop() {
 
          // Alternate the LED unless the same button is pressed again
          //if(i!=lastButton){
-         if(i!=lastTB[m]){ 
+         if(i!=lastTB[mCurrentMode]){ 
           if (trellis.isLED(i)){
               trellis.clrLED(i);
-              lastTB[m]=i; //set the stored value for menu changes
+              lastTB[mCurrentMode]=i; //set the stored value for menu changes
           }
           else{
             trellis.setLED(i);
             //trellis.clrLED(lastButton);//turn off last one
-            trellis.clrLED(lastTB[m]);
-            lastTB[m]=i; //set the stored value for menu changes
+            trellis.clrLED(lastTB[mCurrentMode]);
+            lastTB[mCurrentMode]=i; //set the stored value for menu changes
           }
           trellis.writeDisplay();
         }
@@ -396,7 +327,7 @@ void loop() {
             
         /**************SHARKS**************/
         //check the rotary encoder menu choice
-        if(m==0){//first menu item
+        if(mCurrentMode==0){//first menu item
             if (i==0){ //button 0 sends button A command
               radiopacket[0] = 'A';
               //oled.clearDisplay();
@@ -435,7 +366,7 @@ void loop() {
             } 
         }
         /**************NeoPixels**************/
-        if(m==1){//next menu item
+        if(mCurrentMode==1){//next menu item
             if (i==0){ //button 0 sends button A command
               radiopacket[0] = 'E';
               //oled.clearDisplay();
@@ -472,7 +403,7 @@ void loop() {
             }  
         }
         /**************Motor Props**************/
-        if(m==2){//next menu item
+        if(mCurrentMode==2){//next menu item
             if (i==0){ //button 0 sends button D command CARD UP
               radiopacket[0] = 'H';
              //oled.clearDisplay();
@@ -509,7 +440,7 @@ void loop() {
             }   
         }
         /**************Lamps**************/
-        if(m==3){//next menu item
+        if(mCurrentMode==3){//next menu item
             if (i==0){ 
               radiopacket[0] = 'K';
              //oled.clearDisplay();
