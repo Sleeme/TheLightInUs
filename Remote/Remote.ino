@@ -22,7 +22,7 @@ using namespace std;
 #define LED_WIDTH 15
 Encoder knob(10, 12);
 uint8_t activeRow = 0;
-long pos = -999;
+long mRotaryPosition = -999;
 long newpos;
 int prevButtonState = HIGH;
 bool needsRefresh = true;
@@ -243,17 +243,20 @@ void setup() {
 
 		//check the encoder knob, set the current position as origin
 	  long newpos = knob.read() / 4;//divide for encoder detents
-	  if (newpos != pos) {
-		  int diff = newpos - pos;//check the different between old and new position
-		  if (diff >= 1) {
-			  mSelectedMode++;
-			  mSelectedMode = (mSelectedMode + NUM_MODES) % NUM_MODES;//modulo to roll over the m variable through the list size
-		  } else { //rotating backwards
-			  mSelectedMode--;
-			  mSelectedMode = (mSelectedMode + NUM_MODES) % NUM_MODES;
-		  }
+	  if (newpos != mRotaryPosition) {
+		  if (mRotaryPosition != -999) {
+			  int diff = newpos - mRotaryPosition;//check the different between old and new position
+			  if (diff >= 1) {
+				  mSelectedMode++;
+				  mSelectedMode = (mSelectedMode + NUM_MODES) % NUM_MODES;//modulo to roll over the m variable through the list size
+			  }
+			  else { //rotating backwards
+				  mSelectedMode--;
+				  mSelectedMode = (mSelectedMode + NUM_MODES) % NUM_MODES;
+			  }
+			}
 		  mSelectionTime = millis();
-		  pos = newpos;
+		  mRotaryPosition = newpos;
 
 		  //clear Trellis lights 
 		  for (int t = 0;t <= 16;t++) {
