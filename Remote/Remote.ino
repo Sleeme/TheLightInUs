@@ -28,6 +28,7 @@ int prevButtonState = HIGH;
 bool needsRefresh = true;
 bool advanced = false;
 unsigned long mActivationTime;
+int mLastPosition = -10000;
 
 
 /********* Trellis Setup ***************/
@@ -214,7 +215,6 @@ void setup() {
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
   void drawText(String string) {
-    matrix.clear();
     matrix.setTextSize(1);
     matrix.setTextWrap(false);  // we dont want text to wrap so it scrolls nicely
     matrix.setTextColor(10);
@@ -234,8 +234,12 @@ void setup() {
 			position = (-offset) % (totalLength + LED_WIDTH) + LED_WIDTH;
 		}
 	}
-    matrix.setCursor(position ,0);
-    matrix.print(string);
+	if (position != mLastPosition) {
+		matrix.clear();
+		matrix.setCursor(position ,0);
+		matrix.print(string);
+		mLastPosition = position;
+	}
   }
 
   void handleRotary() {
@@ -257,6 +261,7 @@ void setup() {
 			}
 		  mSelectionTime = millis();
 		  mRotaryPosition = newpos;
+		  mLastPosition = -1000;
 
 		  //clear Trellis lights 
 		  for (int t = 0;t <= 16;t++) {
