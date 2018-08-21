@@ -232,6 +232,9 @@ void setup() {
 		} else {
 			offset -= totalLength;
 			position = (-offset) % (totalLength + LED_WIDTH) + LED_WIDTH;
+			if (offset / (totalLength + LED_WIDTH) >= 1) {
+				position = max(position, 0);
+			}
 		}
 	}
 	if (position != mLastPosition) {
