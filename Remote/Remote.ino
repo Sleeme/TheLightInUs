@@ -18,6 +18,8 @@ using namespace std;
 
 /********* Encoder Setup ***************/
 #define PIN_ENCODER_SWITCH 11
+#define LED_HEIGHT 7
+#define LED_WIDTH 15
 Encoder knob(10, 12);
 uint8_t activeRow = 0;
 long pos = -999;
@@ -107,6 +109,7 @@ RH_RF69 rf69(RFM69_CS, RFM69_INT);
 
 int lastButton=17; //last button pressed for Trellis logic
 
+#define SELECTION_DELAY 300
 #define NUM_MODES 2
 Mode mModes[] = {
 	TotemMode(), 
@@ -215,8 +218,23 @@ void setup() {
     matrix.setTextSize(1);
     matrix.setTextWrap(false);  // we dont want text to wrap so it scrolls nicely
     matrix.setTextColor(10);
+	int totalLength = string.length() * 6;
 	long current = millis();
-    matrix.setCursor(-(((current - mSelectionTime) / 120) % 16) ,0);
+	long offset = ((current - mSelectionTime));
+	int position;
+	if (offset < SELECTION_DELAY) {
+		position = 0;
+	}
+	else {
+		offset = (offset - SELECTION_DELAY) / 60;
+		if (offset < totalLength) {
+			position = -offset;
+		} else {
+			offset -= totalLength;
+			position = (-offset) % (totalLength + LED_WIDTH) + LED_WIDTH;
+		}
+	}
+    matrix.setCursor(position ,0);
     matrix.print(string);
   }
 
@@ -276,7 +294,7 @@ void loop() {
 
 	Mode currentMode = mModes[mSelectedMode];
 	String name = currentMode.getName();
-	drawText(name);
+	drawText((mSelectedMode + 1)+ name);
 
 	/*************Trellis Button Presses***********/
 	if (MODE == MOMENTARY) {
