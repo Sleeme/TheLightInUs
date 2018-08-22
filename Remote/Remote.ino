@@ -5,7 +5,6 @@
 //
 // MIT License
 
-
 #include "TotemMode.h"
 #include <SPI.h>
 #include <RH_RF69.h>
@@ -18,8 +17,6 @@ using namespace std;
 
 /********* Encoder Setup ***************/
 #define PIN_ENCODER_SWITCH 11
-#define LED_HEIGHT 7
-#define LED_WIDTH 15
 Encoder knob(10, 12);
 uint8_t activeRow = 0;
 long mRotaryPosition = -999;
@@ -28,7 +25,6 @@ int prevButtonState = HIGH;
 bool needsRefresh = true;
 bool advanced = false;
 unsigned long mActivationTime;
-int mLastPosition = -10000;
 
 
 /********* Trellis Setup ***************/
@@ -43,6 +39,7 @@ Adafruit_TrellisSet trellis =  Adafruit_TrellisSet(&matrix0);
 
 /************ OLED Setup ***************/
 Adafruit_IS31FL3731_Wing matrix = Adafruit_IS31FL3731_Wing();
+LedDisplay display = LedDisplay(matrix);
 #if defined(ESP8266)
   #define BUTTON_A 0
   #define BUTTON_B 16
@@ -110,11 +107,10 @@ RH_RF69 rf69(RFM69_CS, RFM69_INT);
 
 int lastButton=17; //last button pressed for Trellis logic
 
-#define SELECTION_DELAY 300
 #define NUM_MODES 2
 Mode mModes[] = {
-	TotemMode(), 
-	TotemMode()
+	TotemMode(display), 
+	TotemMode(display)
 };
 int mSelectedMode = 0;
 long mSelectionTime;
@@ -214,36 +210,6 @@ void setup() {
 }
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-  void drawText(String string) {
-    matrix.setTextSize(1);
-    matrix.setTextWrap(false);  // we dont want text to wrap so it scrolls nicely
-    matrix.setTextColor(10);
-	int totalLength = string.length() * 6;
-	long current = millis();
-	long offset = ((current - mSelectionTime));
-	int position;
-	if (offset < SELECTION_DELAY) {
-		position = 0;
-	}
-	else {
-		offset = (offset - SELECTION_DELAY) / 60;
-		if (offset < totalLength) {
-			position = -offset;
-		} else {
-			offset -= totalLength;
-			position = (-offset) % (totalLength + LED_WIDTH) + LED_WIDTH;
-			if (offset / (totalLength + LED_WIDTH) >= 1) {
-				position = max(position, 0);
-			}
-		}
-	}
-	if (position != mLastPosition) {
-		matrix.clear();
-		matrix.setCursor(position ,0);
-		matrix.print(string);
-		mLastPosition = position;
-	}
-  }
 
   void handleRotary() {
 	  /*************Rotary Encoder Menu***********/
@@ -264,7 +230,6 @@ void setup() {
 			}
 		  mSelectionTime = millis();
 		  mRotaryPosition = newpos;
-		  mLastPosition = -1000;
 
 		  //clear Trellis lights 
 		  for (int t = 0;t <= 16;t++) {
@@ -285,6 +250,7 @@ void setup() {
 			unsigned long now = millis();
 			mActivationTime = now;
 			mActiveMode = mSelectedMode;
+			mModes[mActiveMode].onModeSelected();
 			trellis.clrLED(lastTB[mSelectedMode]);
 			trellis.writeDisplay();
 			lastTB[mSelectedMode] = 17;//set this above the physical range so 
@@ -304,8 +270,7 @@ void loop() {
 	handleRotary();
 
 	Mode currentMode = mModes[mSelectedMode];
-	String name = currentMode.getName();
-	drawText((mSelectedMode + 1)+ name);
+	currentMode.onDraw();
 
 	/*************Trellis Button Presses***********/
 	if (MODE == MOMENTARY) {
