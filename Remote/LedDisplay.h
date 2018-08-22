@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LED_DISPLAY_H
+#define LED_DISPLAY_H
 #include "WString.h"
 #include <Adafruit_GFX.h>
 #include <Adafruit_IS31FL3731.h>
@@ -18,4 +19,5 @@ public:
 	}
 	void drawText(String text);
 };
+#endif
 

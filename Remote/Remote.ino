@@ -6,6 +6,7 @@
 // MIT License
 
 #include "TotemMode.h"
+#include "FixedColorMode.h"
 #include <SPI.h>
 #include <RH_RF69.h>
 #include <Wire.h>
@@ -107,10 +108,12 @@ RH_RF69 rf69(RFM69_CS, RFM69_INT);
 
 int lastButton=17; //last button pressed for Trellis logic
 
-#define NUM_MODES 2
 Mode mModes[] = {
 	TotemMode(display), 
-	TotemMode(display)
+	FixedColorMode(display, 0xffffff, "White"),
+	FixedColorMode(display, 0x0000ff, "Blue"),
+	FixedColorMode(display, 0xff778f, "Pink"),
+	FixedColorMode(display, 0xff0000, "Red")
 };
 int mSelectedMode = 0;
 long mSelectionTime;
@@ -215,17 +218,18 @@ void setup() {
 	  /*************Rotary Encoder Menu***********/
 
 		//check the encoder knob, set the current position as origin
+	  int numModes = sizeof(mModes) / sizeof(mModes[0]);
 	  long newpos = knob.read() / 4;//divide for encoder detents
 	  if (newpos != mRotaryPosition) {
 		  if (mRotaryPosition != -999) {
 			  int diff = newpos - mRotaryPosition;//check the different between old and new position
 			  if (diff >= 1) {
 				  mSelectedMode++;
-				  mSelectedMode = (mSelectedMode + NUM_MODES) % NUM_MODES;//modulo to roll over the m variable through the list size
+				  mSelectedMode = (mSelectedMode + numModes) % numModes;//modulo to roll over the m variable through the list size
 			  }
 			  else { //rotating backwards
 				  mSelectedMode--;
-				  mSelectedMode = (mSelectedMode + NUM_MODES) % NUM_MODES;
+				  mSelectedMode = (mSelectedMode + numModes) % numModes;
 			  }
 			}
 		  mSelectionTime = millis();

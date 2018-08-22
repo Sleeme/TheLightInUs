@@ -21,6 +21,12 @@
     <ClInclude Include="__vm\.Remote.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FixedColorMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LedDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Mode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -29,6 +35,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FixedColorMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LedDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Mode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
