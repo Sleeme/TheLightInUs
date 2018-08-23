@@ -5,7 +5,6 @@
 using namespace std;
 class TotemMode : public Mode {
 public:
-	TotemMode(LedDisplay& display) : Mode("Totem", display) {}
-	void onModeSelected();
+	TotemMode(LedDisplay& display, int x, int y) : Mode("Totem", display, x, y) {}
 };
 #endif

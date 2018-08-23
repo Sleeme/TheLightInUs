@@ -12,12 +12,16 @@ class LedDisplay
 private:
 	Adafruit_IS31FL3731_Wing& mMatrix;
 	int mLastPosition = -10000;
-	String mLastText = "";
+	String mCurrentText = "";
 	long mDrawStart;
 public:
 	LedDisplay(Adafruit_IS31FL3731_Wing& matrix) : mMatrix(matrix) {
+		matrix.setTextSize(1);
+		matrix.setTextWrap(false);  // we dont want text to wrap so it scrolls nicely
+		matrix.setTextColor(10);
 	}
-	void drawText(String text);
+	void draw();
+	void setText(String text);
 };
 #endif
 

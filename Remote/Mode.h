@@ -8,9 +8,11 @@ class Mode {
 private:
 	String mName;
 	LedDisplay& mDisplay;
+	int mX, mY;
 public:
-	Mode(String name, LedDisplay& display) : mName(name), mDisplay(display) {}
+	Mode(String name, LedDisplay& display, int x, int y) : mName(name), mDisplay(display), mX(x), mY(y) {}
 	void onModeSelected();
-	void onDraw();
+	int getX();
+	int getY();
 };
 #endif

@@ -2,10 +2,17 @@
 using namespace std;
 
 void Mode::onModeSelected() {
+	mDisplay.setText(mName);
 }
 
-void Mode::onDraw() {
-	mDisplay.drawText(mName);
+int Mode::getX()
+{
+	return mX;
+}
+
+int Mode::getY()
+{
+	return mY;
 }
 
 
