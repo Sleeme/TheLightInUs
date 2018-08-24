@@ -15,7 +15,7 @@ void ParticipantManager::onModeSelected(Mode* mode)
 		mTrellis.clrLED(prevId);
 		mTrellis.writeDisplay();
 		mDisplay.setText(mode->getName());
-		mRadio.sendModeChange(mode);
+		mRadio.sendModeChange(selected);
 	}
 }
 

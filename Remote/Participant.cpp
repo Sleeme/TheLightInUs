@@ -10,6 +10,13 @@ Mode * Participant::getSelectedMode()
 	return mSelectedMode;
 }
 
+String Participant::getChangeMessage()
+{
+	String result = "P";
+	result += mUniqueId + mSelectedMode->getChangeMessage();
+	return result;
+}
+
 String Participant::getName()
 {
 	return mName;

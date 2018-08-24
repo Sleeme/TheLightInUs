@@ -32,9 +32,9 @@ void Radio::onLoop()
 	}
 }
 
-void Radio::sendModeChange(Mode *newMode)
+void Radio::sendModeChange(Participant *participant)
 {
-	String message = newMode->getChangeMessage();
+	String message = participant->getChangeMessage();
 	const char *cmsg = message.c_str();
 	mRadio.send((const uint8_t*) cmsg, sizeof(cmsg));
 	Serial.println(message);

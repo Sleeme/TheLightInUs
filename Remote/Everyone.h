@@ -5,7 +5,7 @@ using namespace std;
 class Everyone : public Participant
 {
 public:
-	Everyone(Mode* startMode) : Participant("All", -1, startMode) {};
+	Everyone(Mode* startMode) : Participant("All", 0, startMode) {};
 	void setSelectedMode(Mode * selectedMode);
 };
 

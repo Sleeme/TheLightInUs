@@ -13,5 +13,6 @@ public:
 	Participant(String name, int uniqueId, Mode* startMode) : mName(name), mUniqueId(uniqueId), mSelectedMode(startMode) {};
 	void setSelectedMode(Mode* selectedMode);
 	Mode* getSelectedMode();
+	String getChangeMessage();
 	String getName();
 };
