@@ -6,11 +6,12 @@
 #define RFM69_INT     3
 #define RFM69_RST     4
 
-LightedObject::LightedObject()
+LightedObject::LightedObject(int uniqueID) : mUniqueId(uniqueID)
 {
 	// Singleton instance of the radio driver
 	mRf69 = new RH_RF69(RFM69_CS, RFM69_INT);
-	mRadio = new Radio(mRf69);
+	mRadio = new Radio(mRf69, mUniqueId);
+	mBuffer = new char[2];
 }
 
 void LightedObject::onSetup()
@@ -36,5 +37,8 @@ void LightedObject::onSetup()
 
 void LightedObject::onLoop()
 {
-	mRadio->receiveMessage();
+	if (mRadio->receiveMessage(mBuffer)) {
+		Serial.print("my message! ");
+		Serial.println(String(mBuffer).substring(0, 2));
+	}
 }

@@ -5,8 +5,10 @@ class LightedObject
 private:
 	RH_RF69 *mRf69;
 	Radio *mRadio;
+	int mUniqueId;
+	char *mBuffer;
 public:
-	LightedObject();
+	LightedObject(int uniqueId);
 	void onSetup();
 	void onLoop();
 };

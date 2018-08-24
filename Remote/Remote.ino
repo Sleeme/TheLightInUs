@@ -96,7 +96,7 @@ LedDisplay display = LedDisplay(matrix);
 
 // Singleton instance of the radio driver
 RH_RF69 rf69(RFM69_CS, RFM69_INT);
-Radio mRadio(rf69);
+Radio mRadio(&rf69, 0);
 
 int lastButton=17; //last button pressed for Trellis logic
 

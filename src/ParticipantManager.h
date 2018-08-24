@@ -38,11 +38,11 @@ public:
 		, mEncoder(encoder), mTrellis(trellis), mRadio(radio) {
 		mParticipants.push_back(new Everyone(defaultMode));
 		mAll = mParticipants[0];
-		mParticipants.push_back(new Participant("Selim", 1, defaultMode));
-		mParticipants.push_back(new Participant("Sara", 2, defaultMode));
-		mParticipants.push_back(new Participant("John", 3, defaultMode));
-		mParticipants.push_back(new Participant("Board", 4, defaultMode));
-		mParticipants.push_back(new Participant("Totem", 5, defaultMode));
+		mParticipants.push_back(new Participant("Selim", 2, defaultMode));
+		mParticipants.push_back(new Participant("Sara", 3, defaultMode));
+		mParticipants.push_back(new Participant("John", 4, defaultMode));
+		mParticipants.push_back(new Participant("Board", 5, defaultMode));
+		mParticipants.push_back(new Participant("Totem", 6, defaultMode));
 	}
 	void onModeSelected(Mode* mode);
 	boolean onLoop();

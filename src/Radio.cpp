@@ -1,6 +1,7 @@
 #include "Radio.h"
 #include "Mode.h"
 #include "WString.h"
+using namespace std;
 
 void Radio::onLoop()
 {
@@ -15,18 +16,22 @@ void Radio::sendModeChange(Participant *participant)
 	Serial.println(cmsg);
 }
 
-char* Radio::receiveMessage() {
+boolean Radio::receiveMessage(char * buf) {
 	if (mRadio->available()) {
 		// Should be a message for us now   
-		uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
-		uint8_t len = sizeof(buf);
-		if (mRadio->recv(buf, &len))
+		uint8_t len = sizeof(mBuf);
+		if (mRadio->recv((uint8_t*) mBuf, &len))
 		{
 			//      RH_RF69::printBuffer("request: ", buf, len);
 			Serial.print("received: ");
-			Serial.println(String((char *)buf).substring(0, len));
-			return (char*)buf;
+			char *message = (char *)mBuf;
+			Serial.println(String(message).substring(0, len));
+			int participantId = message[1] - '0';
+			if (participantId == mOwnId || participantId == 1) {
+				memcpy(buf, message+2, (len - 2 * sizeof(char)));
+				return true;
+			}
 		}
 	}
-	return NULL;
+	return false;
 }

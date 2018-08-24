@@ -14,7 +14,7 @@
 
 #include "src/LightedObject.h"
 
-LightedObject mBike;
+LightedObject mBike(3);
 void setup()
 {
 	mBike.onSetup();
