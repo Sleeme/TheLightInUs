@@ -15,6 +15,7 @@
 #include <Adafruit_IS31FL3731.h>
 #include "Adafruit_Trellis.h"
 #include <Encoder.h>
+#include "Radio.h"
 using namespace std;
 
 /********* Encoder Setup ***************/
@@ -95,14 +96,15 @@ LedDisplay display = LedDisplay(matrix);
 
 // Singleton instance of the radio driver
 RH_RF69 rf69(RFM69_CS, RFM69_INT);
+Radio mRadio(rf69);
 
 int lastButton=17; //last button pressed for Trellis logic
 
-TotemMode totemMode = TotemMode(display, 0, 0);
-FixedColorMode fixedWhite = FixedColorMode(display, 0xffffff, "White", 0, 1);
-FixedColorMode fixedBlue = FixedColorMode(display, 0x0000ff, "Blue", 1, 1);
-FixedColorMode fixedPink = FixedColorMode(display, 0xff778f, "Pink", 2, 1);
-FixedColorMode fixedRed = FixedColorMode(display, 0xff0000, "Red", 3, 1);
+TotemMode totemMode = TotemMode(display, mRadio, 0, 0);
+FixedColorMode fixedWhite = FixedColorMode(display, mRadio, 0xffffff, "White", 0, 1);
+FixedColorMode fixedBlue = FixedColorMode(display, mRadio, 0x0000ff, "Blue", 1, 1);
+FixedColorMode fixedPink = FixedColorMode(display, mRadio, 0xff778f, "Pink", 2, 1);
+FixedColorMode fixedRed = FixedColorMode(display, mRadio, 0xff0000, "Red", 3, 1);
 
 Mode* mModes[16] = {
 	&totemMode, 
@@ -227,6 +229,7 @@ void setup() {
 void loop() {
 	delay(30); // 30ms delay is required, dont remove me! (Trellis)
 
+	mRadio.onLoop();
 	mParticipantManager.onLoop();
 	display.draw();
 
