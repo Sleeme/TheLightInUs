@@ -14,6 +14,8 @@ void ParticipantManager::onModeSelected(Mode* mode)
 		int prevId = previousMode->getLightId();
 		mTrellis.clrLED(prevId);
 		mTrellis.writeDisplay();
+		mDisplay.setText(mode->getName());
+		mRadio.sendModeChange(mode);
 	}
 }
 
@@ -47,7 +49,6 @@ void ParticipantManager::handleRotary()
 		Mode *activeMode = selected->getSelectedMode();
 		mDisplay.setText(selected->getName());
 		int lightId = activeMode->getLightId();
-		Serial.println(lightId);
 
 		//clear Trellis lights
 		mTrellis.clear();

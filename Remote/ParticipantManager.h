@@ -9,6 +9,7 @@
 #include "Everyone.h"
 #include <Encoder.h>
 #include "Adafruit_Trellis.h"
+#include "Radio.h"
 #undef min
 #undef max
 #include <vector>
@@ -30,10 +31,11 @@ private:
 	Participant* mAll;
 	Adafruit_TrellisSet& mTrellis;
 	Encoder& mEncoder;
+	Radio& mRadio;
 
 public:
-	ParticipantManager(LedDisplay& display, Encoder& encoder, Adafruit_TrellisSet& trellis, Mode* defaultMode) : mDisplay(display)
-		, mEncoder(encoder), mTrellis(trellis) {
+	ParticipantManager(LedDisplay& display, Radio &radio, Encoder& encoder, Adafruit_TrellisSet& trellis, Mode* defaultMode) : mDisplay(display)
+		, mEncoder(encoder), mTrellis(trellis), mRadio(radio) {
 		mParticipants.push_back(new Everyone(defaultMode));
 		mAll = mParticipants[0];
 		mParticipants.push_back(new Participant("Selim", 0, defaultMode));

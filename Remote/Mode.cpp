@@ -3,11 +3,6 @@
 
 using namespace std;
 
-void Mode::onModeSelected() {
-	mDisplay.setText(mName);
-	mRadio.sendModeChange(this);
-}
-
 int Mode::getLightId()
 {
 	return mX + mY * 4;
@@ -15,7 +10,14 @@ int Mode::getLightId()
 
 String Mode::getChangeMessage()
 {
-	return "M" + getLightId();
+	String result = "M";
+	result += getLightId();
+	return result;
+}
+
+String Mode::getName()
+{
+	return mName;
 }
 
 

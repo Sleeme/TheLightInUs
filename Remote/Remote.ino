@@ -100,11 +100,11 @@ Radio mRadio(rf69);
 
 int lastButton=17; //last button pressed for Trellis logic
 
-TotemMode totemMode = TotemMode(display, mRadio, 0, 0);
-FixedColorMode fixedWhite = FixedColorMode(display, mRadio, 0xffffff, "White", 0, 1);
-FixedColorMode fixedBlue = FixedColorMode(display, mRadio, 0x0000ff, "Blue", 1, 1);
-FixedColorMode fixedPink = FixedColorMode(display, mRadio, 0xff778f, "Pink", 2, 1);
-FixedColorMode fixedRed = FixedColorMode(display, mRadio, 0xff0000, "Red", 3, 1);
+TotemMode totemMode = TotemMode(0, 0);
+FixedColorMode fixedWhite = FixedColorMode(0xffffff, "White", 0, 1);
+FixedColorMode fixedBlue = FixedColorMode(0x0000ff, "Blue", 1, 1);
+FixedColorMode fixedPink = FixedColorMode(0xff778f, "Pink", 2, 1);
+FixedColorMode fixedRed = FixedColorMode(0xff0000, "Red", 3, 1);
 
 Mode* mModes[16] = {
 	&totemMode, 
@@ -127,7 +127,7 @@ Mode* mModes[16] = {
 	0,
 	0
 };
-ParticipantManager mParticipantManager(display, knob, trellis, mModes[0]);
+ParticipantManager mParticipantManager(display, mRadio, knob, trellis, mModes[0]);
 int lastTB[8] = {16, 16, 16, 16, 16, 16, 16, 16}; //array to store per-menu Trellis button
 
 /*******************SETUP************/
@@ -241,7 +241,6 @@ void loop() {
 				Mode* pressedMode = mModes[i];
 				if (pressedMode != 0) {
 					trellis.setLED(i);
-					pressedMode->onModeSelected();
 					mParticipantManager.onModeSelected(pressedMode);
 					trellis.writeDisplay(); // tell the trellis to set the LEDs we requested
 				}

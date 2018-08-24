@@ -6,8 +6,8 @@ class FixedColorMode : public Mode {
 private:
 	int mColor;
 public:
-	FixedColorMode(LedDisplay& display, Radio &radio, int color, String name, int x, int y) 
-		: Mode(name, display, radio, x, y) , mColor(color) {}
+	FixedColorMode(int color, String name, int x, int y) 
+		: Mode(name, x, y) , mColor(color) {}
 };
 #endif
 

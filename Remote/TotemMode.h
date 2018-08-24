@@ -6,6 +6,6 @@
 using namespace std;
 class TotemMode : public Mode {
 public:
-	TotemMode(LedDisplay& display, Radio &radio, int x, int y) : Mode("Totem", display, radio, x, y) {}
+	TotemMode(int x, int y) : Mode("Totem", x, y) {}
 };
 #endif
