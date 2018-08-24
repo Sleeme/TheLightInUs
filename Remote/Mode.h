@@ -12,7 +12,6 @@ private:
 public:
 	Mode(String name, LedDisplay& display, int x, int y) : mName(name), mDisplay(display), mX(x), mY(y) {}
 	void onModeSelected();
-	int getX();
-	int getY();
+	int getLightId();
 };
 #endif

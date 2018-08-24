@@ -235,15 +235,18 @@ void loop() {
 		for (uint8_t i=0; i<numKeys; i++) { // go through every button
 			if (trellis.justPressed(i)) { // if it was pressed, turn it on
 				//Serial.print("v"); Serial.println(i);
-				trellis.setLED(i);
-				Mode* pressedMode = mModes[numKeys];
+				Mode* pressedMode = mModes[i];
 				if (pressedMode != 0) {
+					trellis.setLED(i);
 					pressedMode->onModeSelected();
 					mParticipantManager.onModeSelected(pressedMode);
+					trellis.writeDisplay(); // tell the trellis to set the LEDs we requested
+				}
+				else {
+					display.setText(":(");
 				}
 			} 
 		}
-		trellis.writeDisplay(); // tell the trellis to set the LEDs we requested
 	}
 }
 

@@ -2,12 +2,13 @@
 
 void ParticipantManager::onModeSelected(Mode* mode)
 {
-	Participant selected = mParticipants[mSelectedParticipantId];
-	Mode * previousMode = selected.getSelectedMode();
+	Participant* selected = mParticipants[mSelectedParticipantId];
+	Mode * previousMode = selected->getSelectedMode();
 	if (mode != previousMode) {
-		selected.setSelectedMode(mode);
-		int prevId = previousMode->getX() + previousMode->getY() * 4;
+		selected->setSelectedMode(mode);
+		int prevId = previousMode->getLightId();
 		mTrellis.clrLED(prevId);
+		mTrellis.writeDisplay();
 	}
 }
 
@@ -26,7 +27,7 @@ void ParticipantManager::handleRotary()
 	long newpos = mEncoder.read() / 4;//divide for encoder detents
 	if (newpos != mRotaryPosition) {
 		if (mRotaryPosition != -999) {
-			int diff = newpos - mRotaryPosition;//check the different between old and new position
+			int diff = mRotaryPosition - newpos;//check the different between old and new position
 			if (diff >= 1) {
 				mSelectedParticipantId++;
 				mSelectedParticipantId = (mSelectedParticipantId + numParticipants) % numParticipants;//modulo to roll over the m variable through the list size
@@ -37,19 +38,15 @@ void ParticipantManager::handleRotary()
 			}
 		}
 		mRotaryPosition = newpos;
-		Participant selected = mParticipants[mSelectedParticipantId];
-		Mode *activeMode = selected.getSelectedMode();
-		mDisplay.setText(selected.getName());
-		int lightId = activeMode->getX() + activeMode->getY() * 4;
+		Participant* selected = mParticipants[mSelectedParticipantId];
+		Mode *activeMode = selected->getSelectedMode();
+		mDisplay.setText(selected->getName());
+		int lightId = activeMode->getLightId();
+		Serial.println(lightId);
 
-		//clear Trellis lights 
-		for (int t = 0;t <= 16;t++) {
-			if (t != lightId) {
-				mTrellis.clrLED(t);
-			} else {
-				mTrellis.setLED(16);
-			}
-		}
+		//clear Trellis lights
+		mTrellis.clear();
+		mTrellis.setLED(lightId);
 		mTrellis.writeDisplay();
 	}
 

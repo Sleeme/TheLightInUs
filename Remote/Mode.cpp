@@ -5,14 +5,9 @@ void Mode::onModeSelected() {
 	mDisplay.setText(mName);
 }
 
-int Mode::getX()
+int Mode::getLightId()
 {
-	return mX;
-}
-
-int Mode::getY()
-{
-	return mY;
+	return mX + mY * 4;
 }
 
 

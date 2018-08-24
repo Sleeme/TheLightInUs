@@ -25,19 +25,19 @@ private:
 	unsigned long mActivationTime;
 	int mSelectedTargetId = -1;
 	LedDisplay& mDisplay;
-	vector<Participant> mParticipants;
+	vector<Participant*> mParticipants;
 	Adafruit_TrellisSet& mTrellis;
 	Encoder& mEncoder;
 
 public:
 	ParticipantManager(LedDisplay& display, Encoder& encoder, Adafruit_TrellisSet& trellis, Mode* defaultMode) : mDisplay(display)
 		, mEncoder(encoder), mTrellis(trellis) {
-		mParticipants.push_back(Participant("All", -1, defaultMode));
-		mParticipants.push_back(Participant("Selim", 0, defaultMode));
-		mParticipants.push_back(Participant("Sara", 1, defaultMode));
-		mParticipants.push_back(Participant("John", 2, defaultMode));
-		mParticipants.push_back(Participant("Board", 3, defaultMode));
-		mParticipants.push_back(Participant("Totem", 4, defaultMode));
+		mParticipants.push_back(new Participant("All", -1, defaultMode));
+		mParticipants.push_back(new Participant("Selim", 0, defaultMode));
+		mParticipants.push_back(new Participant("Sara", 1, defaultMode));
+		mParticipants.push_back(new Participant("John", 2, defaultMode));
+		mParticipants.push_back(new Participant("Board", 3, defaultMode));
+		mParticipants.push_back(new Participant("Totem", 4, defaultMode));
 	}
 	void onModeSelected(Mode* mode);
 	boolean onLoop();
