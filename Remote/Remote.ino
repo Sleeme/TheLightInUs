@@ -5,9 +5,9 @@
 //
 // MIT License
 
-#include "ParticipantManager.h"
-#include "TotemMode.h"
-#include "FixedColorMode.h"
+#include "src/ParticipantManager.h"
+#include "src/TotemMode.h"
+#include "src/FixedColorMode.h"
 #include <SPI.h>
 #include <RH_RF69.h>
 #include <Wire.h>
@@ -15,7 +15,7 @@
 #include <Adafruit_IS31FL3731.h>
 #include "Adafruit_Trellis.h"
 #include <Encoder.h>
-#include "Radio.h"
+#include "src/Radio.h"
 using namespace std;
 
 /********* Encoder Setup ***************/

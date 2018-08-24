@@ -15,49 +15,55 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Remote.ino" />
+    <ClCompile Include="src\Everyone.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FixedColorMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LedDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Participant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ParticipantManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Radio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TotemMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="__vm\.Remote.vsarduino.h">
+    <ClInclude Include="src\Everyone.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FixedColorMode.h">
+    <ClInclude Include="src\FixedColorMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LedDisplay.h">
+    <ClInclude Include="src\LedDisplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mode.h">
+    <ClInclude Include="src\Mode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TotemMode.h">
+    <ClInclude Include="src\Participant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Participant.h">
+    <ClInclude Include="src\ParticipantManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ParticipantManager.h">
+    <ClInclude Include="src\Radio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="FixedColorMode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LedDisplay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TotemMode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Participant.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticipantManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="src\TotemMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
