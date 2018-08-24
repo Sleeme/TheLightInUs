@@ -14,12 +14,17 @@
 
 #include <SPI.h>
 #include <RH_RF69.h>
+#include "src/Radio.h"
+
+#if defined(ARDUINO_SAMD_FEATHER_M0) // Feather M0 w/Radio
+#define RFM69_CS      8
+#define RFM69_INT     3
+#define RFM69_RST     4
+#endif
 
 // Singleton instance of the radio driver
-//RH_RF69 rf69;
-//RH_RF69 rf69(15, 16); // For RF69 on PJRC breakout board with Teensy 3.1
-//RH_RF69 rf69(4, 2); // For MoteinoMEGA https://lowpowerlab.com/shop/moteinomega
-RH_RF69 rf69(8, 3); // Adafruit Feather 32u4
+RH_RF69 rf69(RFM69_CS, RFM69_INT);
+Radio mRadio(rf69);
 
 void setup()
 {
@@ -54,28 +59,5 @@ void setup()
 
 void loop()
 {
-	if (rf69.available())
-	{
-		// Should be a message for us now   
-		uint8_t buf[RH_RF69_MAX_MESSAGE_LEN];
-		uint8_t len = sizeof(buf);
-		if (rf69.recv(buf, &len))
-		{
-			//      RH_RF69::printBuffer("request: ", buf, len);
-			Serial.print("got request: ");
-			Serial.println((char*)buf);
-			//      Serial.print("RSSI: ");
-			//      Serial.println(rf69.lastRssi(), DEC);
-
-				  // Send a reply
-			uint8_t data[] = "And hello back to you";
-			rf69.send(data, sizeof(data));
-			rf69.waitPacketSent();
-			Serial.println("Sent a reply");
-		}
-		else
-		{
-			Serial.println("recv failed");
-		}
-	}
+	mRadio.receiveMessage();
 }
