@@ -65,5 +65,11 @@
     <ClInclude Include="src\TotemMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="__vm\.Remote.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Remote.ino" />
   </ItemGroup>
 </Project>
