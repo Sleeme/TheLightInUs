@@ -37,8 +37,20 @@ void LightedObject::onSetup()
 
 void LightedObject::onLoop()
 {
+	// Let's see if we got any messages
 	if (mRadio->receiveMessage(mBuffer)) {
-		Serial.print("my message! ");
-		Serial.println(String(mBuffer).substring(0, 2));
+		if (mBuffer[0] == 'M') {
+			Serial.println("Received Mode change! ");
+			int modeId = 0;
+			for (int i = 1; mBuffer[i] != 'E'; i++) {
+				int number = mBuffer[i] - '0';
+				modeId = modeId * 10 + number;
+			}
+			mSelectedModeId = modeId;
+		}
+	}
+	Mode *selectedMode = mModeRegistry.getMode(mSelectedModeId);
+	if (selectedMode != NULL) {
+		selectedMode->applyMode();
 	}
 }

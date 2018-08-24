@@ -14,5 +14,6 @@ public:
 	int getLightId();
 	String getChangeMessage();
 	String getName();
+	virtual void applyMode();
 };
 #endif

@@ -12,12 +12,17 @@ String Mode::getChangeMessage()
 {
 	String result = "M";
 	result += getLightId();
+	result += "E";
 	return result;
 }
 
 String Mode::getName()
 {
 	return mName;
+}
+
+void Mode::applyMode()
+{
 }
 
 

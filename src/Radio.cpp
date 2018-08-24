@@ -26,9 +26,9 @@ boolean Radio::receiveMessage(char * buf) {
 			Serial.print("received: ");
 			char *message = (char *)mBuf;
 			Serial.println(String(message).substring(0, len));
-			int participantId = message[1] - '0';
+			int participantId = message[0] - '0';
 			if (participantId == mOwnId || participantId == 1) {
-				memcpy(buf, message+2, (len - 2 * sizeof(char)));
+				memcpy(buf, message+1, (len - 1 * sizeof(char)));
 				return true;
 			}
 		}

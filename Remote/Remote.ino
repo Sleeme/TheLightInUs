@@ -6,8 +6,7 @@
 // MIT License
 
 #include "src/ParticipantManager.h"
-#include "src/TotemMode.h"
-#include "src/FixedColorMode.h"
+#include "src/ModeRegistry.h"
 #include <SPI.h>
 #include <RH_RF69.h>
 #include <Wire.h>
@@ -100,38 +99,14 @@ Radio mRadio(&rf69, 0);
 
 int lastButton=17; //last button pressed for Trellis logic
 
-TotemMode totemMode = TotemMode(0, 0);
-FixedColorMode fixedWhite = FixedColorMode(0xffffff, "White", 0, 1);
-FixedColorMode fixedBlue = FixedColorMode(0x0000ff, "Blue", 1, 1);
-FixedColorMode fixedPink = FixedColorMode(0xff778f, "Pink", 2, 1);
-FixedColorMode fixedRed = FixedColorMode(0xff0000, "Red", 3, 1);
-
-Mode* mModes[16] = {
-	&totemMode, 
-	0,
-	0,
-	0,
-
-	&fixedWhite,
-	&fixedBlue,
-	&fixedPink,
-	&fixedRed,
-
-	0,
-	0,
-	0,
-	0,
-
-	0,
-	0,
-	0,
-	0
-};
-ParticipantManager mParticipantManager(display, mRadio, knob, trellis, mModes[0]);
+ModeRegistry *mModeRegistry;
+ParticipantManager *mParticipantManager;
 int lastTB[8] = {16, 16, 16, 16, 16, 16, 16, 16}; //array to store per-menu Trellis button
 
 /*******************SETUP************/
 void setup() {
+  mModeRegistry = new ModeRegistry();
+  mParticipantManager = new ParticipantManager(display, mRadio, knob, trellis, mModeRegistry->getMode(0));
   delay(500);
   Serial.begin(115200);
   //while (!Serial) { delay(1); } // wait until serial console is open, 
@@ -230,7 +205,7 @@ void loop() {
 	delay(30); // 30ms delay is required, dont remove me! (Trellis)
 
 	mRadio.onLoop();
-	mParticipantManager.onLoop();
+	mParticipantManager->onLoop();
 	display.draw();
 
 	/*************Trellis Button Presses***********/
@@ -238,10 +213,10 @@ void loop() {
 		for (uint8_t i=0; i<numKeys; i++) { // go through every button
 			if (trellis.justPressed(i)) { // if it was pressed, turn it on
 				//Serial.print("v"); Serial.println(i);
-				Mode* pressedMode = mModes[i];
+				Mode* pressedMode = mModeRegistry->getMode(i);
 				if (pressedMode != 0) {
 					trellis.setLED(i);
-					mParticipantManager.onModeSelected(pressedMode);
+					mParticipantManager->onModeSelected(pressedMode);
 					trellis.writeDisplay(); // tell the trellis to set the LEDs we requested
 				}
 				else {

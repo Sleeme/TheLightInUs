@@ -1,5 +1,6 @@
 #pragma once
 #include "Radio.h"
+#include "ModeRegistry.h"
 class LightedObject
 {
 private:
@@ -7,6 +8,8 @@ private:
 	Radio *mRadio;
 	int mUniqueId;
 	char *mBuffer;
+	ModeRegistry mModeRegistry;
+	int mSelectedModeId;
 public:
 	LightedObject(int uniqueId);
 	void onSetup();

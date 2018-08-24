@@ -12,7 +12,7 @@ Mode * Participant::getSelectedMode()
 
 String Participant::getChangeMessage()
 {
-	String result = "P";
+	String result = "";
 	result += mUniqueId + mSelectedMode->getChangeMessage();
 	return result;
 }
