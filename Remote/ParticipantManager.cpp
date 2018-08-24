@@ -6,6 +6,11 @@ void ParticipantManager::onModeSelected(Mode* mode)
 	Mode * previousMode = selected->getSelectedMode();
 	if (mode != previousMode) {
 		selected->setSelectedMode(mode);
+		if (selected == mAll) {
+			for (int i = 1; i < mParticipants.size(); i++) {
+				mParticipants[i]->setSelectedMode(mode);
+			}
+		}
 		int prevId = previousMode->getLightId();
 		mTrellis.clrLED(prevId);
 		mTrellis.writeDisplay();

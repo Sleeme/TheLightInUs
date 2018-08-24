@@ -6,6 +6,7 @@
 #include "WString.h"
 #include "LedDisplay.h"
 #include "Participant.h"
+#include "Everyone.h"
 #include <Encoder.h>
 #include "Adafruit_Trellis.h"
 #undef min
@@ -26,13 +27,15 @@ private:
 	int mSelectedTargetId = -1;
 	LedDisplay& mDisplay;
 	vector<Participant*> mParticipants;
+	Participant* mAll;
 	Adafruit_TrellisSet& mTrellis;
 	Encoder& mEncoder;
 
 public:
 	ParticipantManager(LedDisplay& display, Encoder& encoder, Adafruit_TrellisSet& trellis, Mode* defaultMode) : mDisplay(display)
 		, mEncoder(encoder), mTrellis(trellis) {
-		mParticipants.push_back(new Participant("All", -1, defaultMode));
+		mParticipants.push_back(new Everyone(defaultMode));
+		mAll = mParticipants[0];
 		mParticipants.push_back(new Participant("Selim", 0, defaultMode));
 		mParticipants.push_back(new Participant("Sara", 1, defaultMode));
 		mParticipants.push_back(new Participant("John", 2, defaultMode));
