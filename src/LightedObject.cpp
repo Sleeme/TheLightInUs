@@ -39,8 +39,6 @@ void LightedObject::onSetup()
 		LightedPart *part = mLightedParts[i];
 		int distance = part->getLightDistanceFromOrigin();
 		int length = part->getLedLength();
-		Serial.println(length);
-			Serial.println(distance);
 		maxLength = max(length, maxLength);
 		longestDistance = max(length + distance, longestDistance);
 	}
@@ -70,10 +68,10 @@ void LightedObject::onLoop()
 		}
 	}
 	if (mOn) {
-	//Mode *selectedMode = mModeRegistry.getMode(mSelectedModeId);
-	//if (selectedMode != NULL) {
-	//	selectedMode->applyMode(mLightState);
-	//}
+		Mode *selectedMode = mModeRegistry.getMode(mSelectedModeId);
+		if (selectedMode != NULL) {
+			selectedMode->applyMode(mLightState);
+		}
 	}
 }
 
