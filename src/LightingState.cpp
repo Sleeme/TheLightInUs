@@ -20,6 +20,7 @@ Adafruit_NeoPXL8* LightingState::getLights()
 
 void LightingState::apply()
 {
+	Serial.println("apply");
 	for (int i = 0; i < mParts->size(); i++) {
 		mParts->at(i)->applyState(this);
 	}
