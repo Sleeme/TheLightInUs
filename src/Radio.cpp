@@ -17,7 +17,7 @@ void Radio::sendModeChange(Participant *participant)
 }
 
 boolean Radio::receiveMessage(char * buf) {
-	//return false;
+	return false;
 	if (mRadio->available()) {
 		// Should be a message for us now   
 		uint8_t len = sizeof(mBuf);

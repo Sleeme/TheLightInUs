@@ -15,8 +15,12 @@
 #include <Adafruit_NeoMatrix_ZeroDMA.h>
 #include <Adafruit_NeoPXL8.h>
 #include "src/LightedObject.h"
+#include <MD_UISwitch.h>
 
 LightedObject mBike(3);
+const uint8_t DIGITAL_SWITCH_ACTIVE = LOW;  // digital signal when switch is pressed 'on'
+
+MD_UISwitch_Digital S(6, DIGITAL_SWITCH_ACTIVE);
 void setup()
 {
 	// Front wheel
@@ -32,5 +36,24 @@ void setup()
 
 void loop()
 {
+	MD_UISwitch::keyResult_t k = S.read();
+
+	switch (k)
+	{
+	case MD_UISwitch::KEY_NULL:      /* Serial.println("NULL"); */  break;
+	case MD_UISwitch::KEY_PRESS: {
+		Serial.print("\nKEY_PRESS ");
+		mBike.nextMode();
+		break;
+	}
+	case MD_UISwitch::KEY_DPRESS:    Serial.print("\nKEY_DOUBLE "); break;
+	case MD_UISwitch::KEY_LONGPRESS: {
+		Serial.print("\nKEY_LONG   "); 
+		mBike.onLongPress();
+		break;
+	}
+	case MD_UISwitch::KEY_RPTPRESS:  Serial.print("\nKEY_REPEAT "); break;
+	default:                         Serial.print("\nKEY_UNKNWN "); break;
+	}
 	mBike.onLoop();
 }

@@ -21,11 +21,13 @@ private:
 	int8_t *mPins;
 	Adafruit_NeoPXL8 *mLights;
 	LightingState *mLightState;
+	boolean mOn = true;
 public:
 	LightedObject(int uniqueId);
 	void onSetup();
 	void onLoop();
 	void nextMode();
 	void addLightedPart(LightedPart *part);
+	void onLongPress();
 };
 

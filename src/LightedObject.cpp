@@ -69,10 +69,12 @@ void LightedObject::onLoop()
 			mSelectedModeId = modeId;
 		}
 	}
+	if (mOn) {
 	//Mode *selectedMode = mModeRegistry.getMode(mSelectedModeId);
 	//if (selectedMode != NULL) {
 	//	selectedMode->applyMode(mLightState);
 	//}
+	}
 }
 
 void LightedObject::nextMode()
@@ -83,4 +85,15 @@ void LightedObject::nextMode()
 void LightedObject::addLightedPart(LightedPart * part)
 {
 	mLightedParts.push_back(part);
+}
+
+void LightedObject::onLongPress()
+{
+	mOn = !mOn;
+	if (mOn) {
+		mLights->setBrightness(255);
+	}
+	else {
+		mLights->setBrightness(0);
+	}
 }
