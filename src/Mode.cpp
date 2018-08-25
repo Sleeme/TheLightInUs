@@ -21,7 +21,7 @@ String Mode::getName()
 	return mName;
 }
 
-void Mode::applyMode()
+void Mode::applyMode(LightingState *lights)
 {
 }
 

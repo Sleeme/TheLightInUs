@@ -2,6 +2,7 @@
 #define MODE_H
 #include "WString.h"
 #include "LedDisplay.h"
+#include "LightingState.h"
 
 using namespace std;
 class Mode {
@@ -14,6 +15,6 @@ public:
 	int getLightId();
 	String getChangeMessage();
 	String getName();
-	virtual void applyMode();
+	virtual void applyMode(LightingState *state);
 };
 #endif

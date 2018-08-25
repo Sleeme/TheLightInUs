@@ -2,6 +2,8 @@
 #include "Radio.h"
 #include "ModeRegistry.h"
 #include "LightedPart.h"
+#include <Adafruit_NeoPXL8.h>
+#include "LightingState.h"
 #undef min
 #undef max
 #include <vector>
@@ -16,6 +18,9 @@ private:
 	ModeRegistry mModeRegistry;
 	int mSelectedModeId;
 	vector<LightedPart*> mLightedParts;
+	int8_t *mPins;
+	Adafruit_NeoPXL8 *mLights;
+	LightingState *mLightState;
 public:
 	LightedObject(int uniqueId);
 	void onSetup();

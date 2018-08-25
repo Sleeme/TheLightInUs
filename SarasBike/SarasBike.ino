@@ -12,6 +12,8 @@
 // Tested on miniWireless with RFM69 www.anarduino.com/miniwireless
 // Tested on Teensy 3.1 with RF69 on PJRC breakout board
 
+#include <Adafruit_NeoMatrix_ZeroDMA.h>
+#include <Adafruit_NeoPXL8.h>
 #include "src/LightedObject.h"
 
 LightedObject mBike(3);

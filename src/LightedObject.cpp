@@ -33,6 +33,25 @@ void LightedObject::onSetup()
 	uint8_t key[] = { 0x33, 0x91, 0x3a, 0e8, 0x25, 0x01, 0x21, 0x08,
 					0x11, 0x29, 0xd0, 0xaa, 0x65, 0x06, 0x07, 0x5c };
 	mRf69->setEncryptionKey(key);
+	
+	// Lets find the longest distance of the last light;
+	int longestDistance;
+	int maxLength;
+	for (int i = 0; i < mLightedParts.size(); i++) {
+		LightedPart *part = mLightedParts[i];
+		int length = part->getLedLength();
+		maxLength = max(length, maxLength);
+		longestDistance = max(length + part->getLightDistanceFromOrigin(), longestDistance);
+	}
+	for (int i = 0; i < mLightedParts.size(); i++) {
+		LightedPart *part = mLightedParts[i];
+		part->setLightStartId(i * maxLength);
+	}
+	mPins = new int8_t[8]{ 12, 10, 11, 13, 5, MOSI, A4, A3 };
+	mLights = new Adafruit_NeoPXL8(maxLength, mPins, NEO_GRB);
+	mLights->begin();
+	mLights->setBrightness(255);
+	mLightState = new LightingState(mLights, &mLightedParts, longestDistance);
 }
 
 void LightedObject::onLoop()
@@ -51,7 +70,7 @@ void LightedObject::onLoop()
 	}
 	Mode *selectedMode = mModeRegistry.getMode(mSelectedModeId);
 	if (selectedMode != NULL) {
-		selectedMode->applyMode();
+		selectedMode->applyMode(mLightState);
 	}
 }
 

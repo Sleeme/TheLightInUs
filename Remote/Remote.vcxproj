@@ -107,6 +107,7 @@
     <ClCompile Include="src\LedDisplay.cpp" />
     <ClCompile Include="src\LightedObject.cpp" />
     <ClCompile Include="src\Mode.cpp" />
+    <ClCompile Include="src\ModeRegistry.cpp" />
     <ClCompile Include="src\Participant.cpp" />
     <ClCompile Include="src\ParticipantManager.cpp" />
     <ClCompile Include="src\Radio.cpp" />
@@ -120,6 +121,7 @@
       <FileType>CppCode</FileType>
     </ClInclude>
     <ClInclude Include="src\Mode.h" />
+    <ClInclude Include="src\ModeRegistry.h" />
     <ClInclude Include="src\Participant.h" />
     <ClInclude Include="src\ParticipantManager.h" />
     <ClInclude Include="src\Radio.h" />
@@ -139,7 +141,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties arduino.upload.port="COM3" />
+      <UserProperties arduino.upload.port="COM7" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
