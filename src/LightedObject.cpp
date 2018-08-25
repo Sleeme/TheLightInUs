@@ -54,3 +54,13 @@ void LightedObject::onLoop()
 		selectedMode->applyMode();
 	}
 }
+
+void LightedObject::nextMode()
+{
+	mSelectedModeId = mModeRegistry.nextModeId(mSelectedModeId);
+}
+
+void LightedObject::addLightedPart(LightedPart * part)
+{
+	mLightedParts.push_back(part);
+}

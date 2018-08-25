@@ -17,6 +17,12 @@
 LightedObject mBike(3);
 void setup()
 {
+	mBike.addLightedPart(new LightedPart(100, 0));
+	mBike.addLightedPart(new LightedPart(100, 0));
+	mBike.addLightedPart(new LightedPart(100, 0));
+	mBike.addLightedPart(new LightedPart(100, 0));
+	mBike.addLightedPart(new LightedPart(100, 0));
+	mBike.addLightedPart(new LightedPart(100, 0));
 	mBike.onSetup();
 }
 

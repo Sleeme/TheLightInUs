@@ -11,5 +11,6 @@ private:
 public:
 	ModeRegistry();
 	Mode* getMode(int id);
+	int nextModeId(int currentModeId);
 };
 

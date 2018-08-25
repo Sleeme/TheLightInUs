@@ -21,3 +21,12 @@ Mode * ModeRegistry::getMode(int id)
 {
 	return mModes[id];
 }
+
+int ModeRegistry::nextModeId(int currentModeId)
+{
+	currentModeId = (currentModeId + 1) % mModes.size();
+	while(getMode(currentModeId) == NULL) {
+		currentModeId = (currentModeId + 1) % mModes.size();
+	}
+	return currentModeId;
+}
