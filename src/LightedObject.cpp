@@ -16,8 +16,6 @@ LightedObject::LightedObject(int uniqueID) : mUniqueId(uniqueID)
 
 void LightedObject::onSetup()
 {
-	Serial.begin(9600);
-	while (!Serial);
 	if (mRf69->init())
 		Serial.println("init failed");
 	// Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM (for low power module)
@@ -35,20 +33,23 @@ void LightedObject::onSetup()
 	mRf69->setEncryptionKey(key);
 	
 	// Lets find the longest distance of the last light;
-	int longestDistance;
-	int maxLength;
+	int longestDistance = 0;
+	int maxLength = 0;
 	for (int i = 0; i < mLightedParts.size(); i++) {
 		LightedPart *part = mLightedParts[i];
+		int distance = part->getLightDistanceFromOrigin();
 		int length = part->getLedLength();
+		Serial.println(length);
+			Serial.println(distance);
 		maxLength = max(length, maxLength);
-		longestDistance = max(length + part->getLightDistanceFromOrigin(), longestDistance);
+		longestDistance = max(length + distance, longestDistance);
 	}
 	for (int i = 0; i < mLightedParts.size(); i++) {
 		LightedPart *part = mLightedParts[i];
 		part->setLightStartId(i * maxLength);
 	}
 	mPins = new int8_t[8]{ 12, 10, 11, 13, 5, MOSI, A4, A3 };
-	mLights = new Adafruit_NeoPXL8(maxLength, mPins, NEO_GRB);
+	mLights = new Adafruit_NeoPXL8(108, mPins, NEO_GRB);
 	mLights->begin();
 	mLights->setBrightness(255);
 	mLightState = new LightingState(mLights, &mLightedParts, longestDistance);
@@ -61,17 +62,17 @@ void LightedObject::onLoop()
 		if (mBuffer[0] == 'M') {
 			Serial.println("Received Mode change! ");
 			int modeId = 0;
-			for (int i = 1; mBuffer[i] != 'E'; i++) {
+			for (int i = 1; mBuffer[i] != 'E' && i < 3; i++) {
 				int number = mBuffer[i] - '0';
 				modeId = modeId * 10 + number;
 			}
 			mSelectedModeId = modeId;
 		}
 	}
-	Mode *selectedMode = mModeRegistry.getMode(mSelectedModeId);
-	if (selectedMode != NULL) {
-		selectedMode->applyMode(mLightState);
-	}
+	//Mode *selectedMode = mModeRegistry.getMode(mSelectedModeId);
+	//if (selectedMode != NULL) {
+	//	selectedMode->applyMode(mLightState);
+	//}
 }
 
 void LightedObject::nextMode()
