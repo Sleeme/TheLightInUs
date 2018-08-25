@@ -24,3 +24,8 @@ void LightingState::apply()
 		mParts->at(i)->applyState(this);
 	}
 }
+
+int LightingState::getBufferLength()
+{
+	return mMaxLightDistance;
+}

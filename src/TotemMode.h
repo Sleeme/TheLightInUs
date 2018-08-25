@@ -7,5 +7,6 @@ using namespace std;
 class TotemMode : public Mode {
 public:
 	TotemMode(int x, int y) : Mode("Totem", x, y) {}
+	virtual void applyMode(LightingState *state);
 };
 #endif

@@ -20,5 +20,6 @@ public:
 	uint32_t *getLightBuffer();
 	Adafruit_NeoPXL8 *getLights();
 	void apply();
+	int getBufferLength();
 };
 

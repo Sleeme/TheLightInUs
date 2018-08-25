@@ -8,6 +8,7 @@ private:
 public:
 	FixedColorMode(int color, String name, int x, int y) 
 		: Mode(name, x, y) , mColor(color) {}
+	virtual void applyMode(LightingState *state);
 };
 #endif
 
