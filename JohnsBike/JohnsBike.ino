@@ -43,13 +43,13 @@ void loop()
 	case MD_UISwitch::KEY_NULL:      /* Serial.println("NULL"); */  break;
 	case MD_UISwitch::KEY_PRESS: {
 		Serial.print("\nKEY_PRESS ");
-		//mBike.nextMode();
+		mBike.nextMode();
 		break;
 	}
 	case MD_UISwitch::KEY_DPRESS:    Serial.print("\nKEY_DOUBLE "); break;
 	case MD_UISwitch::KEY_LONGPRESS: {
 		Serial.print("\nKEY_LONG   "); 
-		//mBike.onLongPress();
+		mBike.onLongPress();
 		break;
 	}
 	case MD_UISwitch::KEY_RPTPRESS:  Serial.print("\nKEY_REPEAT "); break;
