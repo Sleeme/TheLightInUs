@@ -27,10 +27,10 @@ void setup()
 	mBike.addLightedPart(new LightedPart(39, 0));
 	// Middle and Back
 	mBike.addLightedPart(new LightedPart(108, 10));
-	// Top + Handle
+	// Top 
 	mBike.addLightedPart(new LightedPart(62, 0));
-	// Ring + LED
-	mBike.addLightedPart(new LightedPart(20, 0));
+	// Ring + LED + Handle
+	mBike.addLightedPart(new LightedPart(108, 0));
 	mBike.onSetup();
 }
 
