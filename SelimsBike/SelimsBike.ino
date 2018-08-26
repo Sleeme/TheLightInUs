@@ -23,12 +23,14 @@ const uint8_t DIGITAL_SWITCH_ACTIVE = LOW;  // digital signal when switch is pre
 MD_UISwitch_Digital S(6, DIGITAL_SWITCH_ACTIVE);
 void setup()
 {
-	// Basket + Back
-	mBike.addLightedPart(new LightedPart(134, 0)); //140
+	// Basket + Center light
+	mBike.addLightedPart(new LightedPart(108, 0)); //140
+	// Back of the bike
+	mBike.addLightedPart(new LightedPart(40, 50));
 	// Bottom of bike
-	mBike.addLightedPart(new LightedPart(134, 0));
-	// Bottom of bike
-	mBike.addLightedPart(new LightedPart(134, 40));
+	mBike.addLightedPart(new LightedPart(50, 0));
+	// Top and Tail
+	mBike.addLightedPart(new LightedPart(100, 0));
 	mBike.onSetup();
 }
 
