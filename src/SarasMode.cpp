@@ -31,7 +31,7 @@ void SarasMode::applyMode(LightingState * state)
 	colorRgb.b = mColor & 0x0000ff;
 	hsv hsv = rgb2hsv(colorRgb);
 	//hsv.h = (int) (hsv.h + (360 * hueFraction)) % 360;
-	hsv.h = (int)(hsv.h + (30 * sin(hueFraction))) % 360;
+	hsv.h = (int)(hsv.h + (0 * sin(hueFraction))) % 360;
 	rgb modified = hsv2rgb(hsv);
 	//int r = (color >> 16) & 0x0000ff;
 	//int g = (color >> 8) & 0x0000ff;

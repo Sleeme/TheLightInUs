@@ -49,7 +49,7 @@ void LightedObject::onSetup()
 	mPins = new int8_t[8]{ 12, 10, 11, 13, 5, MOSI, A4, A3 };
 	mLights = new Adafruit_NeoPXL8(108, mPins, NEO_GRB);
 	mLights->begin();
-	mLights->setBrightness(255);
+	mLights->setBrightness(155);
 	mLightState = new LightingState(mLights, &mLightedParts, longestDistance);
 }
 
@@ -89,7 +89,7 @@ void LightedObject::onLongPress()
 {
 	mOn = !mOn;
 	if (mOn) {
-		mLights->setBrightness(255);
+		mLights->setBrightness(155);
 	}
 	else {
 		mLights->setBrightness(0);

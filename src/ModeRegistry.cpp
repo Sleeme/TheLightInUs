@@ -10,13 +10,19 @@ ModeRegistry::ModeRegistry()
 	mModes[mode->getLightId()] = mode;
 	mode = new SarasMode(0xff00ff, 1, 0);
 	mModes[mode->getLightId()] = mode;
-	mode = new FixedColorMode(0xffffff, "White", 0, 1);
+	mode = new SarasMode(0xffffff, 2, 0);
 	mModes[mode->getLightId()] = mode;
-	mode = new FixedColorMode(0x0000ff, "Blue", 1, 1);
+	mode = new SarasMode(0x0000ff, 3, 0);
 	mModes[mode->getLightId()] = mode;
-	mode = new FixedColorMode(0xff778f, "Pink", 2, 1);
+	mode = new SarasMode(0x8800ff, 0, 1);
 	mModes[mode->getLightId()] = mode;
-	mode = new FixedColorMode(0xff0000, "Red", 3, 1);
+	mode = new FixedColorMode(0xffffff, "White", 1, 1);
+	mModes[mode->getLightId()] = mode;
+	mode = new FixedColorMode(0x0000ff, "Blue", 2, 1);
+	mModes[mode->getLightId()] = mode;
+	mode = new FixedColorMode(0xff778f, "Pink", 3, 1);
+	mModes[mode->getLightId()] = mode;
+	mode = new FixedColorMode(0xff0000, "Red", 0, 2);
 	mModes[mode->getLightId()] = mode;
 }
 
