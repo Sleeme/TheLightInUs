@@ -17,7 +17,7 @@
 #include "src/LightedObject.h"
 #include <MD_UISwitch.h>
 
-LightedObject mBike(3);
+LightedObject mBike(3, 1);
 const uint8_t DIGITAL_SWITCH_ACTIVE = LOW;  // digital signal when switch is pressed 'on'
 
 MD_UISwitch_Digital S(6, DIGITAL_SWITCH_ACTIVE);

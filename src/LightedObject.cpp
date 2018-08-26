@@ -6,7 +6,7 @@
 #define RFM69_INT     3
 #define RFM69_RST     4
 
-LightedObject::LightedObject(int uniqueID) : mUniqueId(uniqueID)
+LightedObject::LightedObject(int uniqueID, int defaultMode = 0) : mUniqueId(uniqueID), mSelectedModeId(defaultMode)
 {
 	// Singleton instance of the radio driver
 	mRf69 = new RH_RF69(RFM69_CS, RFM69_INT);

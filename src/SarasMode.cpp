@@ -1,4 +1,4 @@
-#include "TotemMode.h"
+#include "SarasMode.h"
 
 typedef struct {
 	double r;       // a fraction between 0 and 1
@@ -15,7 +15,7 @@ typedef struct {
 static hsv   rgb2hsv(rgb in);
 static rgb   hsv2rgb(hsv in);
 
-void TotemMode::applyMode(LightingState * state)
+void SarasMode::applyMode(LightingState * state)
 {
 	uint32_t *lightBuffer = state->getLightBuffer();
 	int length = state->getBufferLength();
@@ -26,12 +26,12 @@ void TotemMode::applyMode(LightingState * state)
 	duration = 6000;
 	//int color = rgb(0xff00ff;
 	rgb colorRgb = rgb();
-	colorRgb.r = 0xff;
-	colorRgb.g = 0x00;
-	colorRgb.b = 0xff;
+	colorRgb.r = (mColor >> 16) & 0x0000ff;
+	colorRgb.g = (mColor >> 8) & 0x0000ff;
+	colorRgb.b = mColor & 0x0000ff;
 	hsv hsv = rgb2hsv(colorRgb);
-	hsv.h = (int) (hsv.h + (360 * hueFraction)) % 360;
-	//hsv.h = (int) (hsv.h + (30 * sin(hueFraction))) % 360;
+	//hsv.h = (int) (hsv.h + (360 * hueFraction)) % 360;
+	hsv.h = (int)(hsv.h + (30 * sin(hueFraction))) % 360;
 	rgb modified = hsv2rgb(hsv);
 	//int r = (color >> 16) & 0x0000ff;
 	//int g = (color >> 8) & 0x0000ff;
@@ -39,12 +39,12 @@ void TotemMode::applyMode(LightingState * state)
 	int r = modified.r;
 	int g = modified.g;
 	int b = modified.b;
-	float timeFraction = (time % duration) / (float) duration;
+	float timeFraction = (time % duration) / (float)duration;
 	float waveLength = length * 1.5;
-	int highLightIndex = (int) (-waveLength * (1.0f - timeFraction) + (length + waveLength) * timeFraction);
+	int highLightIndex = (int)(-waveLength * (1.0f - timeFraction) + (length + waveLength) * timeFraction);
 	for (int i = 0; i < length; i++) {
 		float fraction = max(0.01f, 1.0f - abs(i - highLightIndex) / waveLength);
-		lightBuffer[i] =  lights->Color(r*fraction, g * fraction, b*fraction);
+		lightBuffer[i] = lights->Color(r*fraction, g * fraction, b*fraction);
 	}
 	state->apply();
 }

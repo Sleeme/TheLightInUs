@@ -23,7 +23,7 @@ private:
 	LightingState *mLightState;
 	boolean mOn = true;
 public:
-	LightedObject(int uniqueId);
+	LightedObject(int uniqueId, int defaultMode);
 	void onSetup();
 	void onLoop();
 	void nextMode();

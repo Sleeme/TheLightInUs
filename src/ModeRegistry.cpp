@@ -1,11 +1,14 @@
 #include "ModeRegistry.h"
 #include "TotemMode.h"
 #include "FixedColorMode.h"
+#include "SarasMode.h"
 
 ModeRegistry::ModeRegistry()
 {
 	mModes = vector<Mode*>(16);
 	Mode *mode = new TotemMode(0, 0);
+	mModes[mode->getLightId()] = mode;
+	mode = new SarasMode(0xff00ff, 1, 0);
 	mModes[mode->getLightId()] = mode;
 	mode = new FixedColorMode(0xffffff, "White", 0, 1);
 	mModes[mode->getLightId()] = mode;
