@@ -17,20 +17,20 @@
 #include "src/LightedObject.h"
 #include <MD_UISwitch.h>
 
-LightedObject mBike(3, 1);
+LightedObject mBike(3, 0);
 const uint8_t DIGITAL_SWITCH_ACTIVE = LOW;  // digital signal when switch is pressed 'on'
 
 MD_UISwitch_Digital S(6, DIGITAL_SWITCH_ACTIVE);
 void setup()
 {
 	// Front wheel
-	mBike.addLightedPart(new LightedPart(39, 0));
+	mBike.addLightedPart(new LightedPart(128, 0));
 	// Middle and Back
-	mBike.addLightedPart(new LightedPart(108, 10));
+	mBike.addLightedPart(new LightedPart(120, 10));
 	// Top 
-	mBike.addLightedPart(new LightedPart(62, 0));
+	mBike.addLightedPart(new LightedPart(120, 0));
 	// Ring + LED + Handle
-	mBike.addLightedPart(new LightedPart(108, 0));
+	mBike.addLightedPart(new LightedPart(60, 120));
 	mBike.onSetup();
 }
 
@@ -43,13 +43,13 @@ void loop()
 	case MD_UISwitch::KEY_NULL:      /* Serial.println("NULL"); */  break;
 	case MD_UISwitch::KEY_PRESS: {
 		Serial.print("\nKEY_PRESS ");
-		mBike.nextMode();
+		//mBike.nextMode();
 		break;
 	}
 	case MD_UISwitch::KEY_DPRESS:    Serial.print("\nKEY_DOUBLE "); break;
 	case MD_UISwitch::KEY_LONGPRESS: {
 		Serial.print("\nKEY_LONG   "); 
-		mBike.onLongPress();
+		//mBike.onLongPress();
 		break;
 	}
 	case MD_UISwitch::KEY_RPTPRESS:  Serial.print("\nKEY_REPEAT "); break;
