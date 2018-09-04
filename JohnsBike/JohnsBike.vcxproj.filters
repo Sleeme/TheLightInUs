@@ -60,6 +60,9 @@
     <ClInclude Include="src\TotemMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\FixedWave.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Everyone.cpp">
@@ -95,10 +98,10 @@
     <ClCompile Include="src\Radio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SarasMode.cpp">
+    <ClCompile Include="src\TotemMode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TotemMode.cpp">
+    <ClCompile Include="src\FixedWave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

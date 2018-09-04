@@ -57,6 +57,9 @@
     <ClInclude Include="src\LightingState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\SarasMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Everyone.cpp">
@@ -93,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\LightingState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SarasMode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
